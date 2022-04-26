@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Dibuja con el Mouse</title>
+<style>
+	body{
+		width: 600px;
+		margin: 0 auto;
+		text-align: center;
+	}
+	canvas{
+		background:green;
+		border: solid yellow 3px;
+	}
+	div{
+		margin: 1em;
+		text-align: center;
+	}
+</style>
+<script>
+var canvas, ctx, inicio, bandera, colorSelect, lineaSelect, borrar;
+window.onload=function(){
+	canvas = document.getElementById("miCanvas");
+	inicio = {};
+	colorSelect = document.getElementById("color");
+	lineaSelect = document.getElementById("linea");
+	borrar = document.getElementById("borrar");
+	if(canvas && canvas.getContext){
+		ctx = canvas.getContext("2d");
+		if (ctx) {
+			/**************
+			 * Definiciones
+			 * ***********/
+			ctx.strokeStyle = "yellow";
+			ctx.lineWidth = 5;
+			/**************
+			 * Eventos
+			 * ***********/
+			borrar.onclick = function() {
+				ctx.clearRect(0,0,canvas.width,canvas.height);
+			}
+			colorSelect.onchange = function(e) {
+				ctx.strokeStyle = colorSelect.value;
+			}
+			lineaSelect.onchange = function(e) {
+				ctx.lineWidth = lineaSelect.value;
+			}
+			canvas.onmousedown = function(e) {
+				inicio = ajusta(e.clientX,e.clientY);
+				bandera = true;
+			}
+			canvas.onmouseup = function(e) {
+				bandera = false;
+			}
+			canvas.onmousemove = function(e) {
+				if (bandera) {
+					fin = ajusta(e.clientX, e.clientY);
+					dibujar(inicio,fin);
+					inicio = fin;
+				}
+			}
+		} else{
+			alert("NO cuentas con CANVAS")
+		};
+	}
+}
+const ajusta = (xx,yy) =>{
+	const inicioCanvas = canvas.getBoundingClientRect();
+	const x = xx - inicioCanvas.left;
+	const y = yy - inicioCanvas.top;
+	return {x:x,y:y}
+}
+const dibujar = (inicio, fin) => {
+	ctx.beginPath();
+	ctx.moveTo(inicio.x, inicio.y);
+	ctx.lineTo(fin.x, fin.y);
+	ctx.stroke();
+}
+</script>
+</head>
+
+<body>
+<h1>Dibuja con el Mouse</h1>
+<canvas id="miCanvas" width="600" height="400">
+	Tu navegador no soporta el canvas de HTML5
+</canvas>
+<div>
+	Color:<select id="color">
+		<option value="yellow">Amarillo</option>
+		<option value="blue">Azul</option>
+		<option value="black">Negro</option>
+		<option value="white">Blanco</option>
+		<option value="red">Rojo</option>
+	</select>
+	Línea:<select id="linea">
+		<option value="1">1</option>
+		<option value="2">2</option>
+		<option value="3">3</option>
+		<option value="4">4</option>
+		<option value="5">5</option>
+	</select>
+	<input type="button" id="borrar" value="Borrar todo">
+</div>
+</body>
+</html>
